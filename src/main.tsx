@@ -1,15 +1,18 @@
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
-import { RouterProvider,  } from '@tanstack/react-router'
-import { router } from "./router/router";
-import './index.css'
 
-const rootElement = document.getElementById("root")!
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-  root.render(
-    <StrictMode>
-      <RouterProvider router={router} />
-    </StrictMode>,
-  )
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router";
+import Home from "./pages/home";
+import AddTodo from "./pages/add_todo";
+
+const root = document.getElementById("root");
+
+if (root) {
+  ReactDOM.createRoot(root).render(
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/addTodo" element={<AddTodo />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }

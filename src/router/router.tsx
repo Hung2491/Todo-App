@@ -7,8 +7,8 @@ import {
 
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Box } from "@mui/material";
-import AddTodo from "../screen/add_todo";
-import Home from "../screen/home";
+import AddTodo from "../pages/add_todo";
+import Home from "../pages/home";
 
 // Tạo root route
 const rootRoute = createRootRoute({
@@ -23,17 +23,17 @@ const rootRoute = createRootRoute({
 // Tạo các route con
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/home",
+  path: "/",
   component: Home,
 });
-const addTaskRoute = createRoute({
+const addTodoRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/addTask",
+  path: "/addTodo",
   component: AddTodo,
 });
 
 // Tạo routeTree
-const routeTree = rootRoute.addChildren([ homeRoute, addTaskRoute]);
+const routeTree = rootRoute.addChildren([ homeRoute, addTodoRoute]);
 
 // Tạo router với routeTree
 const router = createRouter({ routeTree });
