@@ -7,55 +7,6 @@ interface Props {
   onDelete: (id: number) => void;
 }
 export default function TodoItem({ todo, onToggle, onDelete }: Props) {
-  const styles = {
-    container: {
-      mt: 5,
-      padding: "25px",
-      display: "flex",
-      alignItems: "flex-start",
-      justifyContent: "flex-start",
-      borderBottom: "2px solid #e7e7e7",
-    },
-    content: {
-      display: "flex",
-      alignItems: "flex-start",
-      flex: 1,
-    },
-    checkbox: {
-      padding: "5px",
-    },
-    title: {
-      color: "black",
-      fontWeight: 600,
-    },
-    tagBox: {
-      display: "flex",
-      alignItems: "center",
-      padding: "1px",
-      borderRadius: "5px",
-      justifyContent: "center",
-      mt: 1,
-      width: "50%",
-      mb: 1,
-      backgroundColor: "#e7e7e7",
-    },
-    tagText: {
-      fontWeight: 500,
-      color: "gray",
-    },
-    date: {
-      fontWeight: 600,
-      color: "black",
-    },
-    deleteIcon: {
-      fontSize: "20px",
-      color: "black",
-    },
-    boxMargin: {
-      ml: 3,
-    },
-  };
-
   return (
     <Box sx={styles.container}>
       <Box sx={styles.content}>
@@ -66,7 +17,7 @@ export default function TodoItem({ todo, onToggle, onDelete }: Props) {
         />
         <Box sx={styles.boxMargin}>
           <Typography variant="subtitle1" sx={styles.title}>
-            {todo.title}
+            {todo.comment}
           </Typography>
           <Box sx={styles.tagBox}>
             <Typography variant="body2" sx={styles.tagText}>
@@ -84,3 +35,51 @@ export default function TodoItem({ todo, onToggle, onDelete }: Props) {
     </Box>
   );
 }
+const styles = {
+  container: {
+    mt: 5,
+    padding: "25px",
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+    borderBottom: "2px solid #e7e7e7",
+  },
+  content: {
+    display: "flex",
+    alignItems: "flex-start",
+    flex: 1,
+  },
+  checkbox: {
+    padding: "5px",
+  },
+  title: {
+    color: "black",
+    fontWeight: 600,
+  },
+  tagBox: {
+    display: "flex",
+    alignItems: "center",
+    padding: "1px",
+    borderRadius: "5px",
+    justifyContent: "center",
+    mt: 1,
+    mb: 1,
+    width: "50%",
+    backgroundColor: "#e7e7e7",
+  },
+  tagText: {
+    fontWeight: 500,
+    color: "gray",
+  },
+  date: {
+    fontWeight: 600,
+    color: "black",
+  },
+  deleteIcon: {
+    fontSize: "20px",
+    color: "black",
+  },
+  boxMargin: {
+    ml: 3,
+  },
+};

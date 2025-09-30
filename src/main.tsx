@@ -1,6 +1,5 @@
-
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router";
 import Home from "./pages/home";
 import AddTodo from "./pages/add_todo";
 
@@ -13,6 +12,7 @@ if (root) {
         <Route path="/" element={<Home />} />
         <Route path="/addTodo" element={<AddTodo />} />
       </Routes>
+      ;
     </BrowserRouter>
   );
 }

@@ -1,22 +1,45 @@
 import { useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import { Box, Button, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  TextField,
+  IconButton,
+} from "@mui/material";
 import AlarmAddIcon from "@mui/icons-material/AlarmAdd";
 import type { Todo } from "../types";
 import { useNavigate } from "react-router";
 
+// Date Picker imports
+import dayjs, { Dayjs } from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+
 const TAGS = ["Work", "Health", "Mental", "Others"];
+
 export default function AddTodo() {
   const [todos, setTodos] = useLocalStorage<Todo[]>("todos", []);
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
   const [tag, setTag] = useState(TAGS[0]);
+  const [date, setDate] = useState<Dayjs | null>(dayjs()); // mặc định hôm nay
+  const [openPicker, setOpenPicker] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSave = () => {
     if (!title.trim()) return;
-    const now = new Date();
-    const formattedDate = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')} - ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+
+    const selectedDate = date || dayjs();
+    const formattedDate = `${selectedDate.hour()}:${selectedDate
+      .minute()
+      .toString()
+      .padStart(2, "0")} - ${selectedDate.date()}/${
+      selectedDate.month() + 1
+    }/${selectedDate.year()}`;
 
     const newTodo: Todo = {
       id: Date.now(),
@@ -26,9 +49,11 @@ export default function AddTodo() {
       date: formattedDate,
       completed: false,
     };
+
     setTodos([...todos, newTodo]);
     navigate("/");
   };
+
   return (
     <Box sx={styles.container}>
       <Box sx={styles.formBox}>
@@ -51,14 +76,34 @@ export default function AddTodo() {
           />
           <Select value={tag} onChange={(e) => setTag(e.target.value)}>
             {TAGS.map((t) => (
-              <MenuItem key={t} value={t}>
+              <MenuItem key={t} value={t} color="primary">
                 {t}
               </MenuItem>
             ))}
           </Select>
         </Box>
+
+        {/* DateTime Picker hidden, open by icon */}
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateTimePicker
+            value={date}
+            onChange={(newValue) => setDate(newValue)}
+            open={openPicker}
+            onClose={() => setOpenPicker(false)}
+            slotProps={{
+              textField: {
+                style: { display: "none" }, // ẩn textfield mặc định
+              },
+            }}
+          />
+        </LocalizationProvider>
+
         <Box sx={styles.buttonBox}>
-          <AlarmAddIcon sx={styles.icon} />
+          {/* Icon mở lịch */}
+          <IconButton onClick={() => setOpenPicker(true)}>
+            <AlarmAddIcon sx={styles.icon} />
+          </IconButton>
+
           <Button onClick={handleSave} variant="contained" sx={styles.button}>
             Add Todo
           </Button>
@@ -67,6 +112,7 @@ export default function AddTodo() {
     </Box>
   );
 }
+
 const styles = {
   container: {
     height: "100vh",
@@ -93,32 +139,26 @@ const styles = {
   },
   textField: {
     "& .MuiOutlinedInput-root": {
-      "& fieldset": {},
-      "&:hover fieldset": {
-        borderColor: "black",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "gray",
-        borderWidth: "1px",
-      },
+      "&:hover fieldset": { borderColor: "black" },
+      "&.Mui-focused fieldset": { borderColor: "gray", borderWidth: "1px" },
     },
   },
   buttonBox: {
     display: "flex",
     position: "absolute",
-    bottom: 20,
+    bottom: 100,
     width: "100%",
     justifyContent: "space-between",
     alignItems: "center",
   },
   icon: {
-    mr: 2,
     color: "gray",
     height: "35px",
     width: "35px",
+    mr:2
   },
   button: {
-    width: "100%",
+    flex: 1,
     backgroundColor: "gray",
     fontWeight: 600,
   },
