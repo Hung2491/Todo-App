@@ -1,4 +1,10 @@
-import { createContext, useState, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  type ReactNode,
+  useContext,
+} from "react";
 
 export interface Todo {
   id: number;
@@ -24,7 +30,7 @@ interface TodoProviderProps {
   children: ReactNode;
 }
 
-export const TodoProvider = ({ children }: TodoProviderProps) => {
+export function TodoProvider({ children }: TodoProviderProps) {
   const [todos, setTodos] = useState<Todo[]>(() => {
     const stored = localStorage.getItem("todos");
     return stored ? JSON.parse(stored) : [];
@@ -40,7 +46,9 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
   };
 
   const toggleTodo = (id: number) => {
-    setTodos(todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+    setTodos(
+      todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
+    );
   };
 
   const deleteTodo = (id: number) => {
@@ -69,6 +77,11 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
   };
 
   return <TodoContext.Provider value={value}>{children}</TodoContext.Provider>;
-};
-
-export default TodoContext;
+}
+export function UseTodoContext() {
+  const context = useContext(TodoContext);
+  if (context === undefined) {
+    throw new Error("useTodoContext must be used within a TodoProvider");
+  }
+  return context;
+}

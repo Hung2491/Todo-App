@@ -1,38 +1,20 @@
 import { Box, Typography, Checkbox, IconButton, useTheme, useMediaQuery } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {  useParams } from "react-router";
-import { useLocalStorage } from "usehooks-ts";
-import type { Todo } from "../types";
-
-// Extract date part from formatted date string
-const extractDate = (dateStr: string) => {
-  // "14:30 - 1/10/2025" -> "1/10/2025"
-  const parts = dateStr.split(" - ");
-  return parts.length > 1 ? parts[1] : dateStr;
-};
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate, useParams } from "react-router";
+import { UseTodoContext } from "../context/todoContext";
 
 export default function Detail() {
   const { date } = useParams<{ date: string }>();
-  const [todos, setTodos] = useLocalStorage<Todo[]>("todos", []);
+  const navigate = useNavigate();
+  const { getTodosByDate, toggleTodo, deleteTodo } = UseTodoContext();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
-  // Filter todos by selected date
-  const filteredTodos = todos.filter(
-    (todo) => extractDate(todo.date) === date
-  );
-
-  const toggleTodo = (id: number) => {
-    setTodos(
-      todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    );
-  };
-
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter((t) => t.id !== id));
-  };
+  // Get todos for the selected date
+  const filteredTodos = getTodosByDate(date || "");
 
   const completedCount = filteredTodos.filter((t) => t.completed).length;
   const totalCount = filteredTodos.length;
@@ -47,9 +29,9 @@ export default function Detail() {
       >
         {/* Header */}
         <Box sx={styles.header}>
-          {/* <IconButton sx={styles.backButton} onClick={() => navigate("/")}>
+          <IconButton sx={styles.backButton} onClick={() => navigate("/")}>
             <ArrowBackIcon />
-          </IconButton> */}
+          </IconButton>
           <Typography variant={isMobile ? "h5" : "h4"} sx={styles.title}>
             Tasks for {date}
           </Typography>

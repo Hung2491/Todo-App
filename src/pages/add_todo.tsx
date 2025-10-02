@@ -1,58 +1,53 @@
 import { useState } from "react";
-import { useLocalStorage } from "usehooks-ts";
 import {
   Box,
   Button,
   MenuItem,
   Select,
   TextField,
-  IconButton,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import AlarmAddIcon from "@mui/icons-material/AlarmAdd";
-import type { Todo } from "../types";
 import { useNavigate } from "react-router";
-
-// Date Picker imports
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import dayjs, { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { UseTodoContext } from "../context/todoContext";
 
 const TAGS = ["Work", "Health", "Mental", "Others"];
 
 export default function AddTodo() {
-  const [todos, setTodos] = useLocalStorage<Todo[]>("todos", []);
+  const { addTodo } = UseTodoContext();
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
   const [tag, setTag] = useState(TAGS[0]);
   const [date, setDate] = useState<Dayjs | null>(dayjs()); // mặc định hôm nay
-  const [openPicker, setOpenPicker] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSave = () => {
     if (!title.trim()) return;
-
-    const selectedDate = date || dayjs();
-    const formattedDate = `${selectedDate.hour()}:${selectedDate
+    const now = dayjs().startOf("day");
+    const selectedDate = date ? dayjs(date) : dayjs();
+    const validDate = selectedDate.isBefore(now) ? dayjs() : selectedDate;
+    const formattedDate = `${validDate.hour()}:${validDate
       .minute()
       .toString()
-      .padStart(2, "0")} - ${selectedDate.date()}/${
-      selectedDate.month() + 1
-    }/${selectedDate.year()}`;
+      .padStart(
+        2,
+        "0"
+      )} - ${validDate.date()}/${validDate.month() + 1}/${validDate.year()}`;
 
-    const newTodo: Todo = {
-      id: Date.now(),
+    addTodo({
       title,
       comment,
       tag,
       date: formattedDate,
       completed: false,
-    };
+    });
 
-    setTodos([...todos, newTodo]);
     navigate("/");
   };
 
@@ -66,7 +61,7 @@ export default function AddTodo() {
       <Box
         sx={{
           ...styles.formBox,
-          width: isMobile ? "90%" : isTablet ? "70%" : "50%",
+          width: isMobile ? "90%" : isTablet ? "70%" : "30%",
         }}
       >
         <Box sx={styles.inputBox}>
@@ -99,19 +94,14 @@ export default function AddTodo() {
           </Select>
         </Box>
 
-        {/* DateTime Picker hidden, open by icon */}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DateTimePicker
-            value={date}
-            onChange={(newValue) => setDate(newValue)}
-            open={openPicker}
-            onClose={() => setOpenPicker(false)}
-            slotProps={{
-              textField: {
-                style: { display: "none" }, // ẩn textfield mặc định
-              },
-            }}
-          />
+          <DemoContainer components={["DateTimePicker"]}>
+            <DateTimePicker
+              value={date}
+              onChange={(newValue) => setDate(newValue)}
+              minDate={dayjs()} // không chọn ngày trước hôm nay
+            />
+          </DemoContainer>
         </LocalizationProvider>
 
         <Box
@@ -121,16 +111,6 @@ export default function AddTodo() {
             gap: isMobile ? 2 : 0,
           }}
         >
-          {/* Icon mở lịch */}
-          <IconButton onClick={() => setOpenPicker(true)}>
-            <AlarmAddIcon
-              sx={{
-                ...styles.icon,
-                mr: isMobile ? 0 : 2,
-              }}
-            />
-          </IconButton>
-
           <Button
             onClick={handleSave}
             variant="contained"
@@ -161,6 +141,9 @@ const styles = {
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
     backgroundColor: "#fff",
     position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
   },
   inputBox: {
     width: "100%",
@@ -184,11 +167,11 @@ const styles = {
   },
   icon: {
     color: "gray",
-    height: "35px",
-    width: "35px",
+    height: "30px",
+    width: "30px",
   },
   button: {
-    backgroundColor: "gray",
+    backgroundColor: "#375078",
     fontWeight: 600,
     flex: 1,
   },

@@ -44,6 +44,9 @@ export default function TodoItem({ todo, onToggle, onDelete }: Props) {
         />
         <Box sx={styles.boxMargin}>
           <Typography variant="subtitle1" sx={styles.title}>
+            {todo.title}
+          </Typography>{" "}
+          <Typography variant="subtitle1" sx={{...styles.title, fontWeight: 400, fontSize: "18px", color: "gray" }}>
             {todo.comment}
           </Typography>
           <Box

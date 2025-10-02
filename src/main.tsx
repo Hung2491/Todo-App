@@ -3,18 +3,21 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import Home from "./pages/home";
 import AddTodo from "./pages/add_todo";
 import Detail from "./pages/detail";
+import { TodoProvider } from "./context/todoContext";
 
 const root = document.getElementById("root");
 
 if (root) {
   ReactDOM.createRoot(root).render(
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/addTodo" element={<AddTodo />} />
-        <Route path="/detail/:date" element={<Detail />} />
-      </Routes>
-      ;
-    </BrowserRouter>
+    <TodoProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/addTodo" element={<AddTodo />} />
+          <Route path="/detail/:date" element={<Detail />} />
+        </Routes>
+        ;
+      </BrowserRouter>
+    </TodoProvider>
   );
 }

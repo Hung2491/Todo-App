@@ -1,9 +1,8 @@
-import { Box, Fab, Grid, Typography } from "@mui/material";
+import { Box, Fab, Grid, Typography, useTheme, useMediaQuery } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
-import { useLocalStorage } from "usehooks-ts";
-import type { Todo } from "../types";
+import { UseTodoContext } from "../context/todoContext";
 import TodoItem from "../components/todo_Item";
 
 const TAGS = ["Work", "Health", "Mental", "Others"];
@@ -11,24 +10,21 @@ const COLORS = ["#f2f4fe", "#edfaf3", "#f8eff7", "#f4f3f3"];
 const COLORS_ICON = ["#7990f8", "#46cf8b", "#bf66b1", "#908986"];
 
 export default function Home() {
-  const [todos, setTodos] = useLocalStorage<Todo[]>("todos", []);
+  const { todos, toggleTodo, deleteTodo, countByTag } = UseTodoContext();
   const navigate = useNavigate();
-
-  const toggleTodo = (id: number) => {
-    setTodos(
-      todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    );
-  };
-
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter((t) => t.id !== id));
-  };
-  const countByTag = (tag: string) => todos.filter((t) => t.tag === tag).length;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
   return (
     <Box sx={styles.container}>
-      <Box sx={styles.contentBox}>
-        <Typography variant="h3" sx={{ fontWeight: 600 }}>
+      <Box
+        sx={{
+          ...styles.contentBox,
+          width: isMobile ? "90%" : isTablet ? "70%" : "50%",
+        }}
+      >
+        <Typography variant={isMobile ? "h4" : "h3"} sx={{ fontWeight: 600 }}>
           ToDo
         </Typography>
         <Grid container spacing={2} sx={styles.tagsGrid}>
@@ -36,10 +32,16 @@ export default function Home() {
             <Grid size={6} sx={styles.tagItem(i)} key={tag}>
               <FavoriteIcon sx={styles.favoriteIcon(i)} />
               <Box sx={styles.tagInfoBox}>
-                <Typography variant="h6" sx={styles.tagCountText}>
+                <Typography
+                  variant={isMobile ? "body1" : "h6"}
+                  sx={styles.tagCountText}
+                >
                   {countByTag(tag)}
                 </Typography>
-                <Typography variant="h6" sx={styles.tagNameText}>
+                <Typography
+                  variant={isMobile ? "body1" : "h6"}
+                  sx={styles.tagNameText}
+                >
                   {tag}
                 </Typography>
               </Box>
@@ -60,11 +62,13 @@ export default function Home() {
           aria-label="add"
           style={{
             color: "white",
-            backgroundColor: "#393433",
+            backgroundColor: "#375078",
             borderRadius: "15%",
             position: "fixed",
-            bottom: "20px",
-            right: "20px",
+            bottom: isMobile ? "15px" : "20px",
+            right: isMobile ? "15px" : "20px",
+            width: isMobile ? "50px" : "56px",
+            height: isMobile ? "50px" : "56px",
           }}
         >
           <AddIcon />
@@ -73,21 +77,24 @@ export default function Home() {
     </Box>
   );
 }
+
 const styles = {
   container: {
-    height: "100vh",
+    minHeight: "100vh",
     width: "100vw",
     alignItems: "center",
     display: "flex",
     justifyContent: "center",
+    backgroundColor: "#fafafa",
   },
   contentBox: {
-    width: "50%",
     height: "100%",
     paddingTop: "50px",
+    paddingBottom: "80px",
   },
   tagsGrid: {
     marginTop: "20px",
+    marginBottom: "20px",
   },
   tagItem: (i: number) => ({
     padding: "30px",
