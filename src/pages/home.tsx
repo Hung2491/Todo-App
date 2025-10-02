@@ -1,9 +1,16 @@
-import { Box, Fab, Grid, Typography, useTheme, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Fab,
+  Grid,
+  Typography,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
-import { UseTodoContext } from "../context/todoContext";
 import TodoItem from "../components/todo_Item";
+import { UseTodoContext } from "../context/todoContext";
 
 const TAGS = ["Work", "Health", "Mental", "Others"];
 const COLORS = ["#f2f4fe", "#edfaf3", "#f8eff7", "#f4f3f3"];
@@ -16,6 +23,10 @@ export default function Home() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
+  // Tách todos thành 2 danh sách: chưa hoàn thành và đã hoàn thành
+  const activeTodos = todos.filter((todo) => !todo.completed);
+  const completedTodos = todos.filter((todo) => todo.completed);
+
   return (
     <Box sx={styles.container}>
       <Box
@@ -27,9 +38,11 @@ export default function Home() {
         <Typography variant={isMobile ? "h4" : "h3"} sx={{ fontWeight: 600 }}>
           ToDo
         </Typography>
+
+        {/* Tags Grid */}
         <Grid container spacing={2} sx={styles.tagsGrid}>
           {TAGS.map((tag, i) => (
-            <Grid size={6} sx={styles.tagItem(i)} key={tag}>
+            <Grid size={3} sx={styles.tagItem(i)} key={tag}>
               <FavoriteIcon sx={styles.favoriteIcon(i)} />
               <Box sx={styles.tagInfoBox}>
                 <Typography
@@ -48,15 +61,51 @@ export default function Home() {
             </Grid>
           ))}
         </Grid>
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onToggle={toggleTodo}
-            onDelete={deleteTodo}
-          />
-        ))}
 
+        {/* Active Todos */}
+        {activeTodos.length > 0 && (
+          <Box sx={styles.todoSection}>
+            <Typography variant="h6" sx={styles.sectionTitle}>
+              Active Tasks ({activeTodos.length})
+            </Typography>
+            {activeTodos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onToggle={toggleTodo}
+                onDelete={deleteTodo}
+              />
+            ))}
+          </Box>
+        )}
+
+        {/* Completed Todos */}
+        {completedTodos.length > 0 && (
+          <Box sx={styles.todoSection}>
+            <Typography variant="h6" sx={styles.sectionTitleCompleted}>
+              Completed ({completedTodos.length})
+            </Typography>
+            {completedTodos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onToggle={toggleTodo}
+                onDelete={deleteTodo}
+              />
+            ))}
+          </Box>
+        )}
+
+        {/* Empty State */}
+        {activeTodos.length === 0 && completedTodos.length === 0 && (
+          <Box sx={styles.emptyState}>
+            <Typography variant="body1" sx={styles.emptyText}>
+              No tasks yet. Click the + button to add one!
+            </Typography>
+          </Box>
+        )}
+
+        {/* Add Button */}
         <Fab
           onClick={() => navigate("/addTodo")}
           aria-label="add"
@@ -121,5 +170,33 @@ const styles = {
     fontWeight: 500,
     color: "gray",
     ml: 1,
+  },
+  todoSection: {
+    marginTop: "30px",
+  },
+  sectionTitle: {
+    fontWeight: 600,
+    color: "#375078",
+    marginBottom: "10px",
+  },
+  sectionTitleCompleted: {
+    fontWeight: 600,
+    color: "#999",
+    marginBottom: "10px",
+    marginTop: "20px",
+  },
+  divider: {
+    marginTop: "30px",
+    marginBottom: "10px",
+    borderColor: "#e0e0e0",
+  },
+  emptyState: {
+    textAlign: "center",
+    marginTop: "50px",
+    padding: "40px 20px",
+  },
+  emptyText: {
+    color: "#999",
+    fontSize: "1rem",
   },
 };

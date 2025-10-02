@@ -1,12 +1,26 @@
-import { Box, Typography, Checkbox, IconButton, useTheme, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Checkbox,
+  IconButton,
+  useTheme,
+  useMediaQuery,
+  Divider,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { UseTodoContext } from "../context/todoContext";
+
+// Màu tương ứng với từng tag (giống Home)
+const TAG_COLORS: Record<string, { background: string; text: string }> = {
+  Work: { background: "#f2f4fe", text: "#7990f8" },
+  Health: { background: "#edfaf3", text: "#46cf8b" },
+  Mental: { background: "#f8eff7", text: "#bf66b1" },
+  Others: { background: "#f4f3f3", text: "#908986" },
+};
 
 export default function Detail() {
   const { date } = useParams<{ date: string }>();
-  const navigate = useNavigate();
   const { getTodosByDate, toggleTodo, deleteTodo } = UseTodoContext();
 
   const theme = useTheme();
@@ -16,7 +30,11 @@ export default function Detail() {
   // Get todos for the selected date
   const filteredTodos = getTodosByDate(date || "");
 
-  const completedCount = filteredTodos.filter((t) => t.completed).length;
+  // Phân chia todos thành 2 nhóm: chưa hoàn thành và đã hoàn thành
+  const activeTodos = filteredTodos.filter((todo) => !todo.completed);
+  const completedTodos = filteredTodos.filter((todo) => todo.completed);
+
+  const completedCount = completedTodos.length;
   const totalCount = filteredTodos.length;
 
   return (
@@ -29,9 +47,6 @@ export default function Detail() {
       >
         {/* Header */}
         <Box sx={styles.header}>
-          <IconButton sx={styles.backButton} onClick={() => navigate("/")}>
-            <ArrowBackIcon />
-          </IconButton>
           <Typography variant={isMobile ? "h5" : "h4"} sx={styles.title}>
             Tasks for {date}
           </Typography>
@@ -52,57 +67,138 @@ export default function Detail() {
           </Box>
         </Box>
 
-        {/* Todo List */}
-        <Box sx={styles.todoList}>
-          {filteredTodos.length === 0 ? (
-            <Box sx={styles.emptyState}>
-              <Typography variant="body1" sx={styles.emptyText}>
-                No tasks for this date
-              </Typography>
-            </Box>
-          ) : (
-            filteredTodos.map((todo) => (
-              <Box key={todo.id} sx={styles.todoItem}>
-                <Box sx={styles.todoContent}>
-                  <Checkbox
-                    sx={styles.checkbox}
-                    checked={todo.completed}
-                    onChange={() => toggleTodo(todo.id)}
-                  />
-                  <Box sx={styles.todoInfo}>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        ...styles.todoTitle,
-                        textDecoration: todo.completed ? "line-through" : "none",
-                        opacity: todo.completed ? 0.6 : 1,
-                      }}
-                    >
-                      {todo.comment}
-                    </Typography>
-                    <Box sx={styles.todoMeta}>
-                      <Box sx={styles.tagBox}>
-                        <Typography variant="caption" sx={styles.tagText}>
-                          {todo.tag}
+        {/* Empty state */}
+        {filteredTodos.length === 0 && (
+          <Box sx={styles.emptyState}>
+            <Typography variant="body1" sx={styles.emptyText}>
+              No tasks for this date
+            </Typography>
+          </Box>
+        )}
+
+        {/* Active Tasks Section */}
+        {activeTodos.length > 0 && (
+          <Box>
+            <Typography variant="h6" sx={styles.sectionTitle}>
+              Active Tasks ({activeTodos.length})
+            </Typography>
+            {activeTodos.map((todo) => {
+              const tagColor = TAG_COLORS[todo.tag] || TAG_COLORS.Others;
+              return (
+                <Box key={todo.id} sx={styles.todoItem}>
+                  <Box sx={styles.todoContent}>
+                    <Checkbox
+                      sx={styles.checkbox}
+                      checked={todo.completed}
+                      onChange={() => toggleTodo(todo.id)}
+                    />
+                    <Box sx={styles.todoInfo}>
+                      <Typography variant="subtitle1" sx={styles.todoTitle}>
+                        {todo.comment}
+                      </Typography>
+                      <Box sx={styles.todoMeta}>
+                        <Box
+                          sx={{
+                            ...styles.tagBox,
+                            backgroundColor: tagColor.background,
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              ...styles.tagText,
+                              color: tagColor.text,
+                            }}
+                          >
+                            {todo.tag}
+                          </Typography>
+                        </Box>
+                        <Typography variant="caption" sx={styles.timeText}>
+                          {todo.date.split(" - ")[0]}
                         </Typography>
                       </Box>
-                      <Typography variant="caption" sx={styles.timeText}>
-                        {todo.date.split(" - ")[0]}
-                      </Typography>
                     </Box>
                   </Box>
+                  <IconButton
+                    color="error"
+                    onClick={() => deleteTodo(todo.id)}
+                    sx={styles.deleteButton}
+                  >
+                    <DeleteIcon sx={styles.deleteIcon} />
+                  </IconButton>
                 </Box>
-                <IconButton
-                  color="error"
-                  onClick={() => deleteTodo(todo.id)}
-                  sx={styles.deleteButton}
-                >
-                  <DeleteIcon sx={styles.deleteIcon} />
-                </IconButton>
-              </Box>
-            ))
-          )}
-        </Box>
+              );
+            })}
+          </Box>
+        )}
+
+        {/* Divider giữa 2 phần */}
+        {activeTodos.length > 0 && completedTodos.length > 0 && (
+          <Divider sx={styles.divider} />
+        )}
+
+        {/* Completed Tasks Section */}
+        {completedTodos.length > 0 && (
+          <Box>
+            <Typography variant="h6" sx={styles.sectionTitle}>
+              Completed Tasks ({completedTodos.length})
+            </Typography>
+            {completedTodos.map((todo) => {
+              const tagColor = TAG_COLORS[todo.tag] || TAG_COLORS.Others;
+              return (
+                <Box key={todo.id} sx={styles.todoItem}>
+                  <Box sx={styles.todoContent}>
+                    <Checkbox
+                      sx={styles.checkbox}
+                      checked={todo.completed}
+                      onChange={() => toggleTodo(todo.id)}
+                    />
+                    <Box sx={styles.todoInfo}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          ...styles.todoTitle,
+                          textDecoration: "line-through",
+                          opacity: 0.6,
+                        }}
+                      >
+                        {todo.comment}
+                      </Typography>
+                      <Box sx={styles.todoMeta}>
+                        <Box
+                          sx={{
+                            ...styles.tagBox,
+                            backgroundColor: tagColor.background,
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              ...styles.tagText,
+                              color: tagColor.text,
+                            }}
+                          >
+                            {todo.tag}
+                          </Typography>
+                        </Box>
+                        <Typography variant="caption" sx={styles.timeText}>
+                          {todo.date.split(" - ")[0]}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                  <IconButton
+                    color="error"
+                    onClick={() => deleteTodo(todo.id)}
+                    sx={styles.deleteButton}
+                  >
+                    <DeleteIcon sx={styles.deleteIcon} />
+                  </IconButton>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
       </Box>
     </Box>
   );
@@ -114,7 +210,7 @@ const styles = {
     width: "100%",
     display: "flex",
     justifyContent: "center",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fafafa",
   },
   contentBox: {
     paddingTop: "30px",
@@ -157,10 +253,12 @@ const styles = {
     backgroundColor: "#46cf8b",
     transition: "width 0.3s ease",
   },
-  todoList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 2,
+  sectionTitle: {
+    fontWeight: 600,
+    color: "#393433",
+    marginTop: "30px",
+    marginBottom: "10px",
+    marginLeft: "10px",
   },
   todoItem: {
     backgroundColor: "#fff",
@@ -170,6 +268,7 @@ const styles = {
     alignItems: "flex-start",
     justifyContent: "space-between",
     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+    marginBottom: "15px",
     transition: "transform 0.2s ease",
     "&:hover": {
       transform: "translateY(-2px)",
@@ -200,13 +299,11 @@ const styles = {
     gap: 2,
   },
   tagBox: {
-    backgroundColor: "#f0f0f0",
     padding: "4px 12px",
     borderRadius: "6px",
   },
   tagText: {
-    fontWeight: 500,
-    color: "#666",
+    fontWeight: 600,
     fontSize: "0.75rem",
   },
   timeText: {
@@ -221,9 +318,15 @@ const styles = {
     fontSize: "20px",
     color: "#393433",
   },
+  divider: {
+    marginTop: "40px",
+    marginBottom: "20px",
+    borderColor: "#e0e0e0",
+  },
   emptyState: {
     textAlign: "center",
     padding: "60px 20px",
+    marginTop: "40px",
     backgroundColor: "#fff",
     borderRadius: "12px",
   },
