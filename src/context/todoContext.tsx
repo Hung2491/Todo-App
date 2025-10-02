@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useState,
-  useEffect,
-  type ReactNode,
-  useContext,
-} from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode,  } from "react";
 
 export interface Todo {
   id: number;
@@ -20,6 +14,7 @@ interface TodoContextType {
   addTodo: (todo: Omit<Todo, "id">) => void;
   toggleTodo: (id: number) => void;
   deleteTodo: (id: number) => void;
+  updateTodo: (id: number, updatedFields: Partial<Todo>) => void;
   getTodosByDate: (date: string) => Todo[];
   countByTag: (tag: string) => number;
 }
@@ -30,18 +25,23 @@ interface TodoProviderProps {
   children: ReactNode;
 }
 
-export function TodoProvider({ children }: TodoProviderProps) {
+export const TodoProvider = ({ children }: TodoProviderProps) => {
   const [todos, setTodos] = useState<Todo[]>(() => {
+    // Load from localStorage on init
     const stored = localStorage.getItem("todos");
     return stored ? JSON.parse(stored) : [];
   });
 
+  // Save to localStorage whenever todos change
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
   const addTodo = (todo: Omit<Todo, "id">) => {
-    const newTodo: Todo = { ...todo, id: Date.now() };
+    const newTodo: Todo = {
+      ...todo,
+      id: Date.now(),
+    };
     setTodos([...todos, newTodo]);
   };
 
@@ -53,6 +53,12 @@ export function TodoProvider({ children }: TodoProviderProps) {
 
   const deleteTodo = (id: number) => {
     setTodos(todos.filter((t) => t.id !== id));
+  };
+
+  const updateTodo = (id: number, updatedFields: Partial<Todo>) => {
+    setTodos(
+      todos.map((t) => (t.id === id ? { ...t, ...updatedFields } : t))
+    );
   };
 
   const getTodosByDate = (date: string) => {
@@ -72,16 +78,18 @@ export function TodoProvider({ children }: TodoProviderProps) {
     addTodo,
     toggleTodo,
     deleteTodo,
+    updateTodo,
     getTodosByDate,
     countByTag,
   };
 
   return <TodoContext.Provider value={value}>{children}</TodoContext.Provider>;
-}
-export function UseTodoContext() {
+};
+
+export const UseTodoContext = () => {
   const context = useContext(TodoContext);
   if (context === undefined) {
     throw new Error("useTodoContext must be used within a TodoProvider");
   }
   return context;
-}
+};

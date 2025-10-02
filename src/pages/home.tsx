@@ -17,13 +17,14 @@ const COLORS = ["#f2f4fe", "#edfaf3", "#f8eff7", "#f4f3f3"];
 const COLORS_ICON = ["#7990f8", "#46cf8b", "#bf66b1", "#908986"];
 
 export default function Home() {
-  const { todos, toggleTodo, deleteTodo, countByTag } = UseTodoContext();
+  const { todos, toggleTodo, deleteTodo, updateTodo, countByTag } =
+    UseTodoContext();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
-  // Tách todos thành 2 danh sách: chưa hoàn thành và đã hoàn thành
+  // Tách todos thành 2 nhóm: chưa hoàn thành và đã hoàn thành
   const activeTodos = todos.filter((todo) => !todo.completed);
   const completedTodos = todos.filter((todo) => todo.completed);
 
@@ -39,7 +40,6 @@ export default function Home() {
           ToDo
         </Typography>
 
-        {/* Tags Grid */}
         <Grid container spacing={2} sx={styles.tagsGrid}>
           {TAGS.map((tag, i) => (
             <Grid size={3} sx={styles.tagItem(i)} key={tag}>
@@ -52,7 +52,7 @@ export default function Home() {
                   {countByTag(tag)}
                 </Typography>
                 <Typography
-                  variant={isMobile ? "body1" : "h6"}
+                  variant={isMobile ? "body2" : "h6"}
                   sx={styles.tagNameText}
                 >
                   {tag}
@@ -62,9 +62,9 @@ export default function Home() {
           ))}
         </Grid>
 
-        {/* Active Todos */}
+        {/* Danh sách todos chưa hoàn thành */}
         {activeTodos.length > 0 && (
-          <Box sx={styles.todoSection}>
+          <Box>
             <Typography variant="h6" sx={styles.sectionTitle}>
               Active Tasks ({activeTodos.length})
             </Typography>
@@ -74,16 +74,18 @@ export default function Home() {
                 todo={todo}
                 onToggle={toggleTodo}
                 onDelete={deleteTodo}
+                onUpdate={updateTodo}
               />
             ))}
           </Box>
         )}
 
-        {/* Completed Todos */}
+        {activeTodos.length > 0 && completedTodos.length > 0}
+
         {completedTodos.length > 0 && (
-          <Box sx={styles.todoSection}>
-            <Typography variant="h6" sx={styles.sectionTitleCompleted}>
-              Completed ({completedTodos.length})
+          <Box>
+            <Typography variant="h6" sx={styles.sectionTitle}>
+              Completed Tasks ({completedTodos.length})
             </Typography>
             {completedTodos.map((todo) => (
               <TodoItem
@@ -91,21 +93,21 @@ export default function Home() {
                 todo={todo}
                 onToggle={toggleTodo}
                 onDelete={deleteTodo}
+                onUpdate={updateTodo}
               />
             ))}
           </Box>
         )}
 
-        {/* Empty State */}
-        {activeTodos.length === 0 && completedTodos.length === 0 && (
+        {/* Hiển thị khi không có todo nào */}
+        {todos.length === 0 && (
           <Box sx={styles.emptyState}>
             <Typography variant="body1" sx={styles.emptyText}>
-              No tasks yet. Click the + button to add one!
+              No tasks yet. Click the + button to add your first task!
             </Typography>
           </Box>
         )}
 
-        {/* Add Button */}
         <Fab
           onClick={() => navigate("/addTodo")}
           aria-label="add"
@@ -161,6 +163,7 @@ const styles = {
   tagInfoBox: {
     display: "flex",
     ml: "6px",
+    flexDirection: "column",
   },
   tagCountText: {
     color: "black",
@@ -169,34 +172,26 @@ const styles = {
   tagNameText: {
     fontWeight: 500,
     color: "gray",
-    ml: 1,
-  },
-  todoSection: {
-    marginTop: "30px",
   },
   sectionTitle: {
     fontWeight: 600,
-    color: "#375078",
-    marginBottom: "10px",
-  },
-  sectionTitleCompleted: {
-    fontWeight: 600,
-    color: "#999",
-    marginBottom: "10px",
-    marginTop: "20px",
-  },
-  divider: {
+    color: "#393433",
     marginTop: "30px",
     marginBottom: "10px",
+    marginLeft: "10px",
+  },
+  divider: {
+    marginTop: "40px",
+    marginBottom: "20px",
     borderColor: "#e0e0e0",
   },
   emptyState: {
     textAlign: "center",
-    marginTop: "50px",
-    padding: "40px 20px",
+    padding: "60px 20px",
+    marginTop: "40px",
   },
   emptyText: {
     color: "#999",
-    fontSize: "1rem",
+    fontWeight: 500,
   },
 };

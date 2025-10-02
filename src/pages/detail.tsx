@@ -80,7 +80,7 @@ export default function Detail() {
         {activeTodos.length > 0 && (
           <Box>
             <Typography variant="h6" sx={styles.sectionTitle}>
-              Active Tasks ({activeTodos.length})
+              Pending ({activeTodos.length})
             </Typography>
             {activeTodos.map((todo) => {
               const tagColor = TAG_COLORS[todo.tag] || TAG_COLORS.Others;
@@ -93,6 +93,12 @@ export default function Detail() {
                       onChange={() => toggleTodo(todo.id)}
                     />
                     <Box sx={styles.todoInfo}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ fontWeight: 600, fontSize: 18 }}
+                      >
+                        {todo.title}
+                      </Typography>
                       <Typography variant="subtitle1" sx={styles.todoTitle}>
                         {todo.comment}
                       </Typography>
@@ -141,7 +147,7 @@ export default function Detail() {
         {completedTodos.length > 0 && (
           <Box>
             <Typography variant="h6" sx={styles.sectionTitle}>
-              Completed Tasks ({completedTodos.length})
+              Completed ({completedTodos.length})
             </Typography>
             {completedTodos.map((todo) => {
               const tagColor = TAG_COLORS[todo.tag] || TAG_COLORS.Others;
@@ -159,6 +165,17 @@ export default function Detail() {
                         sx={{
                           ...styles.todoTitle,
                           textDecoration: "line-through",
+                          fontWeight: 600,
+                          color: "black",
+                          fontSize: '18px',
+                        }}
+                      >
+                        {todo.title}
+                      </Typography>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          ...styles.todoTitle,
                           opacity: 0.6,
                         }}
                       >
@@ -289,8 +306,9 @@ const styles = {
     flex: 1,
   },
   todoTitle: {
-    fontWeight: 600,
-    color: "#393433",
+    fontWeight: 400,
+    fontSize: "18px",
+    color: "gray",
     marginBottom: "8px",
   },
   todoMeta: {
