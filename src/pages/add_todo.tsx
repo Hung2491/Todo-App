@@ -7,6 +7,8 @@ import {
   Select,
   TextField,
   IconButton,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import AlarmAddIcon from "@mui/icons-material/AlarmAdd";
 import type { Todo } from "../types";
@@ -54,9 +56,19 @@ export default function AddTodo() {
     navigate("/");
   };
 
+  // Responsive
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // <600px
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md")); // 600-900px
+
   return (
     <Box sx={styles.container}>
-      <Box sx={styles.formBox}>
+      <Box
+        sx={{
+          ...styles.formBox,
+          width: isMobile ? "90%" : isTablet ? "70%" : "50%",
+        }}
+      >
         <Box sx={styles.inputBox}>
           <TextField
             placeholder="Title"
@@ -71,12 +83,16 @@ export default function AddTodo() {
             multiline
             fullWidth
             onChange={(e) => setComment(e.target.value)}
-            rows={4}
+            rows={isMobile ? 3 : 4} // mobile ít dòng hơn
             sx={styles.textField}
           />
-          <Select value={tag} onChange={(e) => setTag(e.target.value)}>
+          <Select
+            value={tag}
+            onChange={(e) => setTag(e.target.value)}
+            size={isMobile ? "small" : "medium"} // nhỏ gọn hơn trên mobile
+          >
             {TAGS.map((t) => (
-              <MenuItem key={t} value={t} color="primary">
+              <MenuItem key={t} value={t}>
                 {t}
               </MenuItem>
             ))}
@@ -98,13 +114,31 @@ export default function AddTodo() {
           />
         </LocalizationProvider>
 
-        <Box sx={styles.buttonBox}>
+        <Box
+          sx={{
+            ...styles.buttonBox,
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 2 : 0,
+          }}
+        >
           {/* Icon mở lịch */}
           <IconButton onClick={() => setOpenPicker(true)}>
-            <AlarmAddIcon sx={styles.icon} />
+            <AlarmAddIcon
+              sx={{
+                ...styles.icon,
+                mr: isMobile ? 0 : 2,
+              }}
+            />
           </IconButton>
 
-          <Button onClick={handleSave} variant="contained" sx={styles.button}>
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            sx={{
+              ...styles.button,
+              width: isMobile ? "100%" : "auto",
+            }}
+          >
             Add Todo
           </Button>
         </Box>
@@ -115,27 +149,24 @@ export default function AddTodo() {
 
 const styles = {
   container: {
-    height: "100vh",
-    width: "100vw",
+    minHeight: "100vh",
+    width: "100%",
     justifyContent: "center",
-    alignItems: "center",
     display: "flex",
   },
   formBox: {
     mt: 5,
     padding: "20px",
-    borderRadius: "5px",
-    height: "100%",
-    width: "45%",
-    alignItems: "center",
+    borderRadius: "8px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    backgroundColor: "#fff",
     position: "relative",
   },
   inputBox: {
-    height: "25%",
     width: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    gap: 2,
   },
   textField: {
     "& .MuiOutlinedInput-root": {
@@ -146,8 +177,8 @@ const styles = {
   buttonBox: {
     display: "flex",
     position: "absolute",
-    bottom: 100,
-    width: "100%",
+    width: "96%",
+    bottom: 40,
     justifyContent: "space-between",
     alignItems: "center",
   },
@@ -155,11 +186,10 @@ const styles = {
     color: "gray",
     height: "35px",
     width: "35px",
-    mr:2
   },
   button: {
-    flex: 1,
     backgroundColor: "gray",
     fontWeight: 600,
+    flex: 1,
   },
 };
