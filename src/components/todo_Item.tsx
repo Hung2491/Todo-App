@@ -339,7 +339,7 @@ const styles = {
     "&:hover": {
       backgroundColor: "#f9f9f9",
     },
-    flexDirection: { xs: "column", sm: "row" }, // mobile xuống hàng
+  
   },
   content: {
     display: "flex",
@@ -368,6 +368,7 @@ const styles = {
     fontSize: "0.875rem",
   },
   date: {
+    whiteSpace: "nowrap",
     fontWeight: 600,
     color: "black",
     ml: 2,
