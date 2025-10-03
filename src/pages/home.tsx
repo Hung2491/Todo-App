@@ -64,9 +64,6 @@ export default function Home() {
     return `${day}/${month}/${year}`;
   };
 
- 
-
-
   return (
     <Box sx={styles.container}>
       <Box
@@ -82,7 +79,7 @@ export default function Home() {
         <Grid container spacing={2} sx={styles.tagsGrid}>
           {TAGS.map((tag) => (
             <Grid
-              size={3}
+              size={ isMobile ? 6 : isTablet ? 3 : 3 }
               sx={styles.tagItem(tag.color)}
               key={tag.tag}
               onClick={() => navigate(`/tag/${tag.tag}`)}

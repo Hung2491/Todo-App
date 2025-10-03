@@ -7,6 +7,7 @@ import {
   TextField,
   useTheme,
   useMediaQuery,
+  IconButton,
 } from "@mui/material";
 import { useNavigate } from "react-router";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -15,7 +16,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { UseTodoContext } from "../context/todoContext";
-
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 const TAGS = ["Work", "Health", "Mental", "Others"];
 
 export default function AddTodo() {
@@ -61,9 +62,14 @@ export default function AddTodo() {
       <Box
         sx={{
           ...styles.formBox,
-          width: isMobile ? "90%" : isTablet ? "70%" : "30%",
+          width: isMobile ? "90%" : isTablet ? "70vw" : "30vw",
         }}
       >
+        <Box sx={styles.header}>
+          <IconButton sx={styles.backButton} onClick={() => navigate("/")}>
+            <ArrowBackIcon />
+          </IconButton>
+        </Box>
         <Box sx={styles.inputBox}>
           <TextField
             placeholder="Title"
@@ -124,7 +130,7 @@ export default function AddTodo() {
         </Box>
       </Box>
     </Box>
-  )
+  );
 }
 
 const styles = {
@@ -133,6 +139,14 @@ const styles = {
     width: "100%",
     justifyContent: "center",
     display: "flex",
+  },
+  header: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "20px",
+  },
+  backButton: {
+    color: "#393433",
   },
   formBox: {
     mt: 5,
@@ -160,10 +174,10 @@ const styles = {
   buttonBox: {
     display: "flex",
     position: "absolute",
-    width: "96%",
+    width: "95%",
+    flex: 1,
     bottom: 40,
-    justifyContent: "space-between",
-    alignItems: "center",
+    
   },
   icon: {
     color: "gray",

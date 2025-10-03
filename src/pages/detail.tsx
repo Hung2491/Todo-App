@@ -1,17 +1,23 @@
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
-import { useParams } from "react-router";
+import {
+  Box,
+  Typography,
+  useTheme,
+  useMediaQuery,
+  IconButton,
+} from "@mui/material";
+import { useNavigate, useParams } from "react-router";
 import TodoItem from "../components/todo_Item";
 import { UseTodoContext } from "../context/todoContext";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function Detail() {
   const { date } = useParams<{ date: string }>();
   const { getTodosByDate, toggleTodo, deleteTodo, updateTodo } =
     UseTodoContext();
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
-
+  const navigate = useNavigate();
   // Get todos for the selected date
   const filteredTodos = getTodosByDate(date || "");
 
@@ -32,6 +38,9 @@ export default function Detail() {
       >
         {/* Header */}
         <Box sx={styles.header}>
+          <IconButton sx={styles.backButton} onClick={() => navigate("/")}>
+            <ArrowBackIcon />
+          </IconButton>
           <Typography variant={isMobile ? "h5" : "h4"} sx={styles.title}>
             Tasks for {date}
           </Typography>
@@ -108,6 +117,9 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     backgroundColor: "#fafafa",
+  },
+  backButton: {
+    color: "#393433",
   },
   contentBox: {
     paddingTop: "30px",

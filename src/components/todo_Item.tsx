@@ -12,13 +12,18 @@ import {
   TextField,
   MenuItem,
   Select,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router";
 import type { Todo } from "../context/todoContext";
 import React from "react";
-
+import dayjs, { Dayjs } from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 interface Props {
   todo: Todo;
   onToggle: (id: number) => void;
@@ -41,6 +46,24 @@ const extractDate = (dateStr: string) => {
   const parts = dateStr.split(" - ");
   return parts.length > 1 ? parts[1] : dateStr;
 };
+const parseDateTime = (dateStr: string) => {
+  // Format: "14:30 - 1/10/2025"
+  const parts = dateStr.split(" - ");
+  if (parts.length !== 2) return dayjs();
+
+  const time = parts[0]; // "14:30"
+  const date = parts[1]; // "1/10/2025"
+
+  const [hours, minutes] = time.split(":").map(Number);
+  const [day, month, year] = date.split("/").map(Number);
+
+  return dayjs()
+    .year(year)
+    .month(month - 1)
+    .date(day)
+    .hour(hours)
+    .minute(minutes);
+};
 
 export default function TodoItem({
   todo,
@@ -48,11 +71,17 @@ export default function TodoItem({
   onDelete,
   onUpdate,
 }: Props) {
+  const theme = useTheme();
+
   const [open, setOpen] = React.useState(false);
   const [editOpen, setEditOpen] = React.useState(false);
   const [editedTitle, setEditedTitle] = useState(todo.title);
   const [editedComment, setEditedComment] = useState(todo.comment);
   const [editedTag, setEditedTag] = useState(todo.tag);
+  const [editedDate, setEditedDate] = useState<Dayjs | null>(
+    parseDateTime(todo.date)
+  );
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const navigate = useNavigate();
 
@@ -93,16 +122,23 @@ export default function TodoItem({
   };
 
   const handleSaveEdit = () => {
-    if (onUpdate && editedTitle.trim()) {
+    if (onUpdate && editedTitle.trim() && editedDate) {
+      const formattedDate = `${editedDate.hour()}:${editedDate
+        .minute()
+        .toString()
+        .padStart(2, "0")} - ${editedDate.date()}/${
+        editedDate.month() + 1
+      }/${editedDate.year()}`;
+
       onUpdate(todo.id, {
         title: editedTitle,
         comment: editedComment,
         tag: editedTag,
+        date: formattedDate,
       });
     }
     setEditOpen(false);
   };
-
   // Lấy màu cho tag
   const tagColor = TAG_COLORS[todo.tag] || TAG_COLORS.Others;
 
@@ -115,7 +151,7 @@ export default function TodoItem({
           onClick={handleCheckboxClick}
         />
         <Box sx={styles.boxMargin}>
-          <Box   onClick={handleClickOpen}>
+          <Box onClick={handleClickOpen}>
             <Typography
               variant="subtitle1"
               sx={{
@@ -137,7 +173,6 @@ export default function TodoItem({
                 maxWidth: 200,
                 textDecoration: todo.completed ? "line-through" : "none",
               }}
-            
             >
               {todo.comment}
             </Typography>
@@ -148,7 +183,7 @@ export default function TodoItem({
             onClose={handleClose}
             sx={{
               "& .MuiDialog-paper": {
-                minWidth: "25vw",
+                minWidth: isMobile ? "35vw" : "30vw",
                 maxHeight: "80vh",
               },
             }}
@@ -187,7 +222,7 @@ export default function TodoItem({
             onClose={handleEditClose}
             sx={{
               "& .MuiDialog-paper": {
-                minWidth: "400px",
+                minWidth: isMobile ? "35vw" : "30vw",
                 maxHeight: "80vh",
               },
             }}
@@ -221,6 +256,19 @@ export default function TodoItem({
                     </MenuItem>
                   ))}
                 </Select>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    label="Date & Time"
+                    value={editedDate}
+                    onChange={(newValue) => setEditedDate(newValue)}
+                    minDate={dayjs()}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
               </Box>
             </DialogContent>
             <DialogActions>
