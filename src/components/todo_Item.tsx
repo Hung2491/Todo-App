@@ -115,26 +115,34 @@ export default function TodoItem({
           onClick={handleCheckboxClick}
         />
         <Box sx={styles.boxMargin}>
-          <Typography variant="subtitle1" sx={styles.title}>
-            {todo.title}
-          </Typography>
-          <Typography
-            variant="subtitle2"
-            noWrap={true}
-            sx={{
-              ...styles.title,
-              fontWeight: 400,
-              color: "gray",
-              marginTop: "3px",
-              fontSize: "16px",
-              maxWidth: 200,
-            }}
-            onClick={handleClickOpen}
-          >
-            {todo.comment}
-          </Typography>
+          <Box   onClick={handleClickOpen}>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                ...styles.title,
+                textDecoration: todo.completed ? "line-through" : "none",
+              }}
+            >
+              {todo.title}
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              noWrap={true}
+              sx={{
+                ...styles.title,
+                fontWeight: 400,
+                color: "gray",
+                marginTop: "3px",
+                fontSize: "16px",
+                maxWidth: 200,
+                textDecoration: todo.completed ? "line-through" : "none",
+              }}
+            
+            >
+              {todo.comment}
+            </Typography>
+          </Box>
 
-          {/* View Detail Dialog */}
           <Dialog
             open={open}
             onClose={handleClose}
@@ -168,11 +176,12 @@ export default function TodoItem({
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose} sx={{fontWeight:600}}>Close</Button>
+              <Button onClick={handleClose} sx={{ fontWeight: 600 }}>
+                Close
+              </Button>
             </DialogActions>
           </Dialog>
 
-          {/* Edit Dialog */}
           <Dialog
             open={editOpen}
             onClose={handleEditClose}
@@ -235,6 +244,7 @@ export default function TodoItem({
             }}
           >
             <Box
+              onClick={() => navigate(`/tag/${todo.tag}`)}
               sx={{
                 ...styles.tagBox,
                 backgroundColor: tagColor.background,

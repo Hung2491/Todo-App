@@ -124,7 +124,7 @@ export default function AddTodo() {
         </Box>
       </Box>
     </Box>
-  );
+  )
 }
 
 const styles = {

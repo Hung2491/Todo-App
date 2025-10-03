@@ -7,14 +7,42 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router";
 import TodoItem from "../components/todo_Item";
 import { UseTodoContext } from "../context/todoContext";
+import WorkIcon from "@mui/icons-material/Work";
+import FolderIcon from "@mui/icons-material/Folder";
 
-const TAGS = ["Work", "Health", "Mental", "Others"];
-const COLORS = ["#f2f4fe", "#edfaf3", "#f8eff7", "#f4f3f3"];
-const COLORS_ICON = ["#7990f8", "#46cf8b", "#bf66b1", "#908986"];
+// const TAGS = ["Work", "Health", "Mental", "Others"];
+
+const TAGS = [
+  {
+    icon: <FavoriteIcon sx={{ color: "#7990f8", mb: 1 }} />,
+    tag: "Work",
+    color: "#f2f4fe",
+    iconColor: "#7990f8",
+  },
+  {
+    icon: <WorkIcon sx={{ color: "#46cf8b", mb: 1 }} />,
+    tag: "Health",
+    color: "#edfaf3",
+    iconColor: "#46cf8b",
+  },
+  {
+    icon: <VolunteerActivismIcon sx={{ color: "#bf66b1", mb: 1 }} />,
+    tag: "Mental",
+    color: "#f8eff7",
+    iconColor: "#bf66b1",
+  },
+  {
+    icon: <FolderIcon sx={{ color: "#908986", mb: 1 }} />,
+    tag: "Others",
+    color: "#f4f3f3",
+    iconColor: "#908986",
+  },
+];
 
 export default function Home() {
   const { todos, toggleTodo, deleteTodo, updateTodo, countByTag } =
@@ -27,6 +55,17 @@ export default function Home() {
   // Tách todos thành 2 nhóm: chưa hoàn thành và đã hoàn thành
   const activeTodos = todos.filter((todo) => !todo.completed);
   const completedTodos = todos.filter((todo) => todo.completed);
+  const getToday = (): string => {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0"); // thêm 0 nếu < 10
+    const month = String(today.getMonth() + 1).padStart(2, "0"); // tháng bắt đầu từ 0
+    const year = today.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
+
+ 
+
 
   return (
     <Box sx={styles.container}>
@@ -37,25 +76,31 @@ export default function Home() {
         }}
       >
         <Typography variant={isMobile ? "h4" : "h3"} sx={{ fontWeight: 600 }}>
-          ToDo
+          Today {getToday()}
         </Typography>
 
         <Grid container spacing={2} sx={styles.tagsGrid}>
-          {TAGS.map((tag, i) => (
-            <Grid size={3} sx={styles.tagItem(i)} key={tag}>
-              <FavoriteIcon sx={styles.favoriteIcon(i)} />
+          {TAGS.map((tag) => (
+            <Grid
+              size={3}
+              sx={styles.tagItem(tag.color)}
+              key={tag.tag}
+              onClick={() => navigate(`/tag/${tag.tag}`)}
+            >
+              {tag.icon}
+
               <Box sx={styles.tagInfoBox}>
                 <Typography
                   variant={isMobile ? "body1" : "h6"}
                   sx={styles.tagCountText}
                 >
-                  {countByTag(tag)}
+                  {countByTag(tag.tag)}
                 </Typography>
                 <Typography
                   variant={isMobile ? "body2" : "h6"}
                   sx={styles.tagNameText}
                 >
-                  {tag}
+                  {tag.tag}
                 </Typography>
               </Box>
             </Grid>
@@ -66,7 +111,7 @@ export default function Home() {
         {activeTodos.length > 0 && (
           <Box>
             <Typography variant="h6" sx={styles.sectionTitle}>
-              Active Tasks ({activeTodos.length})
+              Pending ({activeTodos.length})
             </Typography>
             {activeTodos.map((todo) => (
               <TodoItem
@@ -147,17 +192,17 @@ const styles = {
     marginTop: "20px",
     marginBottom: "20px",
   },
-  tagItem: (i: number) => ({
+  tagItem: (i: string) => ({
     padding: "30px",
     borderRadius: "10px",
-    backgroundColor: COLORS[i],
+    backgroundColor: i,
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
     justifyContent: "flex-start",
   }),
-  favoriteIcon: (i: number) => ({
-    color: COLORS_ICON[i] || "yellow",
+  favoriteIcon: (i: string) => ({
+    color: i || "yellow",
     marginBottom: "10px",
   }),
   tagInfoBox: {

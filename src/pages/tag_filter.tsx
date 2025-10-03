@@ -1,24 +1,54 @@
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
-import { useParams } from "react-router";
+import { Box, Typography, useTheme, useMediaQuery, IconButton } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useParams, useNavigate } from "react-router";
 import TodoItem from "../components/todo_Item";
 import { UseTodoContext } from "../context/todoContext";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import WorkIcon from "@mui/icons-material/Work";
+import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
+import FolderIcon from "@mui/icons-material/Folder";
+import type { JSX } from "react";
 
-export default function Detail() {
-  const { date } = useParams<{ date: string }>();
-  const { getTodosByDate, toggleTodo, deleteTodo, updateTodo } =
-    UseTodoContext();
+const TAG_INFO: Record<string, { icon: JSX.Element; color: string; iconColor: string }> = {
+  Work: {
+    icon: <FavoriteIcon sx={{ fontSize: 40 }} />,
+    color: "#f2f4fe",
+    iconColor: "#7990f8",
+  },
+  Health: {
+    icon: <WorkIcon sx={{ fontSize: 40 }} />,
+    color: "#edfaf3",
+    iconColor: "#46cf8b",
+  },
+  Mental: {
+    icon: <VolunteerActivismIcon sx={{ fontSize: 40 }} />,
+    color: "#f8eff7",
+    iconColor: "#bf66b1",
+  },
+  Others: {
+    icon: <FolderIcon sx={{ fontSize: 40 }} />,
+    color: "#f4f3f3",
+    iconColor: "#908986",
+  },
+};
+
+export default function TagFilter() {
+  const { tag } = useParams<{ tag: string }>();
+  const navigate = useNavigate();
+  const { todos, toggleTodo, deleteTodo, updateTodo } = UseTodoContext();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
-  // Get todos for the selected date
-  const filteredTodos = getTodosByDate(date || "");
+  // Lọc todos theo tag
+  const filteredTodos = todos.filter((todo) => todo.tag === tag);
 
-  // Phân chia todos thành 2 nhóm: chưa hoàn thành và đã hoàn thành
+  // Phân chia thành active và completed
   const activeTodos = filteredTodos.filter((todo) => !todo.completed);
   const completedTodos = filteredTodos.filter((todo) => todo.completed);
 
+  const tagInfo = TAG_INFO[tag || "Others"];
   const completedCount = completedTodos.length;
   const totalCount = filteredTodos.length;
 
@@ -30,14 +60,34 @@ export default function Detail() {
           width: isMobile ? "90%" : isTablet ? "70%" : "50%",
         }}
       >
-        {/* Header */}
+        {/* Header with back button */}
         <Box sx={styles.header}>
-          <Typography variant={isMobile ? "h5" : "h4"} sx={styles.title}>
-            Tasks for {date}
-          </Typography>
+          <IconButton sx={styles.backButton} onClick={() => navigate("/")}>
+            <ArrowBackIcon />
+          </IconButton>
         </Box>
 
-        {/* Summary */}
+        {/* Tag Info Card */}
+        <Box
+          sx={{
+            ...styles.tagCard,
+            backgroundColor: tagInfo.color,
+          }}
+        >
+          <Box sx={{ ...styles.tagIcon, color: tagInfo.iconColor }}>
+            {tagInfo.icon}
+          </Box>
+          <Box>
+            <Typography variant={isMobile ? "h5" : "h4"} sx={styles.tagTitle}>
+              {tag}
+            </Typography>
+            <Typography variant="body1" sx={styles.tagSubtitle}>
+              {totalCount} {totalCount === 1 ? "task" : "tasks"}
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Progress Summary */}
         <Box sx={styles.summaryBox}>
           <Typography variant="body1" sx={styles.summaryText}>
             {completedCount} of {totalCount} tasks completed
@@ -56,7 +106,7 @@ export default function Detail() {
         {filteredTodos.length === 0 && (
           <Box sx={styles.emptyState}>
             <Typography variant="body1" sx={styles.emptyText}>
-              No tasks for this date
+              No tasks in {tag} category yet
             </Typography>
           </Box>
         )}
@@ -116,12 +166,33 @@ const styles = {
   header: {
     display: "flex",
     alignItems: "center",
-    marginBottom: "30px",
-    gap: 2,
+    marginBottom: "20px",
   },
-  title: {
+  backButton: {
+    color: "#393433",
+  },
+  tagCard: {
+    padding: "30px",
+    borderRadius: "16px",
+    display: "flex",
+    alignItems: "center",
+    gap: 3,
+    marginBottom: "20px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+  },
+  tagIcon: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tagTitle: {
     fontWeight: 600,
     color: "#393433",
+    marginBottom: "5px",
+  },
+  tagSubtitle: {
+    color: "#666",
+    fontWeight: 500,
   },
   summaryBox: {
     backgroundColor: "#fff",
