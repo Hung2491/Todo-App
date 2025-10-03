@@ -289,6 +289,7 @@ export default function TodoItem({
             sx={{
               display: "flex",
               alignItems: "center",
+              flex:1
             }}
           >
             <Box
