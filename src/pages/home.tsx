@@ -130,7 +130,7 @@ export default function Home() {
         {completedTodos.length > 0 && (
           <Box>
             <Typography variant="h6" sx={styles.sectionTitle}>
-              Completed Tasks ({completedTodos.length})
+              Completed ({completedTodos.length})
             </Typography>
             {completedTodos.map((todo) => (
               <TodoItem
