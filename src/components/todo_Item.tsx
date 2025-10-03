@@ -289,7 +289,6 @@ export default function TodoItem({
             sx={{
               display: "flex",
               alignItems: "center",
-              flex:1
             }}
           >
             <Box
@@ -329,8 +328,8 @@ export default function TodoItem({
 
 const styles = {
   container: {
-    mt: 5,
-    padding: "25px",
+    mt: { xs: 2, sm: 5 },
+    p: { xs: 2, sm: 3 },
     display: "flex",
     alignItems: "flex-start",
     justifyContent: "flex-start",
@@ -340,6 +339,7 @@ const styles = {
     "&:hover": {
       backgroundColor: "#f9f9f9",
     },
+    flexDirection: { xs: "column", sm: "row" }, // mobile xuống hàng
   },
   content: {
     display: "flex",
