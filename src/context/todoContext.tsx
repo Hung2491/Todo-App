@@ -45,6 +45,8 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     setTodos([...todos, newTodo]);
   };
 
+  
+
   const toggleTodo = (id: number) => {
     setTodos(
       todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))

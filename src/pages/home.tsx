@@ -5,6 +5,8 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
@@ -14,8 +16,9 @@ import TodoItem from "../components/todo_Item";
 import { UseTodoContext } from "../context/todoContext";
 import WorkIcon from "@mui/icons-material/Work";
 import FolderIcon from "@mui/icons-material/Folder";
-
-// const TAGS = ["Work", "Health", "Mental", "Others"];
+import SearchIcon from "@mui/icons-material/Search";
+import { useState } from "react";
+import type { Todo } from "../types";
 
 const TAGS = [
   {
@@ -51,10 +54,19 @@ export default function Home() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
-
-  // Tách todos thành 2 nhóm: chưa hoàn thành và đã hoàn thành
+  const [searchQuery, setSearchQuery] = useState(""); // Tách todos thành 2 nhóm: chưa hoàn thành và đã hoàn thành
   const activeTodos = todos.filter((todo) => !todo.completed);
   const completedTodos = todos.filter((todo) => todo.completed);
+
+  const filterBySearch = (list: Todo[]): Todo[] => {
+    if (searchQuery.trim() === "") return list; // nếu chưa nhập search thì trả về nguyên list
+    return list.filter((todo) =>
+      todo.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
+  const filteredActiveTodos = filterBySearch(activeTodos);
+  const filteredCompletedTodos = filterBySearch(completedTodos);
   const getToday = (): string => {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0"); // thêm 0 nếu < 10
@@ -79,7 +91,7 @@ export default function Home() {
         <Grid container spacing={2} sx={styles.tagsGrid}>
           {TAGS.map((tag) => (
             <Grid
-              size={ isMobile ? 6 : isTablet ? 3 : 3 }
+              size={isMobile ? 6 : isTablet ? 3 : 3}
               sx={styles.tagItem(tag.color)}
               key={tag.tag}
               onClick={() => navigate(`/tag/${tag.tag}`)}
@@ -103,14 +115,30 @@ export default function Home() {
             </Grid>
           ))}
         </Grid>
-
+        <TextField
+          placeholder="Search by title..."
+          variant="outlined"
+          fullWidth
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon></SearchIcon>
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={styles.textField}
+        />
         {/* Danh sách todos chưa hoàn thành */}
-        {activeTodos.length > 0 && (
+        {filteredActiveTodos.length > 0 && (
           <Box>
             <Typography variant="h6" sx={styles.sectionTitle}>
               Pending ({activeTodos.length})
             </Typography>
-            {activeTodos.map((todo) => (
+            {filteredActiveTodos.map((todo) => (
               <TodoItem
                 key={todo.id}
                 todo={todo}
@@ -124,12 +152,12 @@ export default function Home() {
 
         {activeTodos.length > 0 && completedTodos.length > 0}
 
-        {completedTodos.length > 0 && (
+        {filteredCompletedTodos.length > 0 && (
           <Box>
             <Typography variant="h6" sx={styles.sectionTitle}>
               Completed ({completedTodos.length})
             </Typography>
-            {completedTodos.map((todo) => (
+            {filteredCompletedTodos.map((todo) => (
               <TodoItem
                 key={todo.id}
                 todo={todo}
@@ -140,15 +168,25 @@ export default function Home() {
             ))}
           </Box>
         )}
+        {/* Nếu search không có kết quả */}
+        {todos.length > 0 &&
+          filteredActiveTodos.length === 0 &&
+          filteredCompletedTodos.length === 0 && (
+            <Box sx={styles.emptyState}>
+              <Typography variant="body1" sx={styles.emptyText}>
+                No tasks found matching "{searchQuery}"
+              </Typography>
+            </Box>
+          )}
 
         {/* Hiển thị khi không có todo nào */}
-        {todos.length === 0 && (
+        {/* {todos.length === 0 && (
           <Box sx={styles.emptyState}>
             <Typography variant="body1" sx={styles.emptyText}>
               No tasks yet. Click the + button to add your first task!
             </Typography>
           </Box>
-        )}
+        )} */}
 
         <Fab
           onClick={() => navigate("/addTodo")}
@@ -175,10 +213,23 @@ const styles = {
   container: {
     minHeight: "100vh",
     width: "100vw",
-    alignItems: "center",
     display: "flex",
     justifyContent: "center",
     backgroundColor: "#fafafa",
+  },
+  textField: {
+    mt: "20px",
+    mb: "20px",
+    "& .MuiOutlinedInput-root": {
+      borderRadius: 50,
+      borderWidth: "2px",
+      "&:hover fieldset": { borderColor: "gray" },
+      "&.Mui-focused fieldset": {
+        borderColor: "gray",
+        borderWidth: "1px",
+        borderRadius: 50,
+      },
+    },
   },
   contentBox: {
     height: "100%",
