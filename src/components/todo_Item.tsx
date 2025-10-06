@@ -35,8 +35,8 @@ const TAGS = ["Work", "Health", "Mental", "Others"];
 
 // Màu tương ứng với từng tag (giống Home)
 const TAG_COLORS: Record<string, { background: string; text: string }> = {
-  Work: { background: "#f2f4fe", text: "#7990f8" },
-  Health: { background: "#edfaf3", text: "#46cf8b" },
+  Health: { background: "#f2f4fe", text: "#7990f8" },
+  Work: { background: "#edfaf3", text: "#46cf8b" },
   Mental: { background: "#f8eff7", text: "#bf66b1" },
   Others: { background: "#f4f3f3", text: "#908986" },
 };
@@ -339,7 +339,6 @@ const styles = {
     "&:hover": {
       backgroundColor: "#f9f9f9",
     },
-  
   },
   content: {
     display: "flex",

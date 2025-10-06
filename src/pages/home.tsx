@@ -20,13 +20,13 @@ import FolderIcon from "@mui/icons-material/Folder";
 const TAGS = [
   {
     icon: <FavoriteIcon sx={{ color: "#7990f8", mb: 1 }} />,
-    tag: "Work",
+    tag: "Health",
     color: "#f2f4fe",
     iconColor: "#7990f8",
   },
   {
     icon: <WorkIcon sx={{ color: "#46cf8b", mb: 1 }} />,
-    tag: "Health",
+    tag: "Work",
     color: "#edfaf3",
     iconColor: "#46cf8b",
   },
