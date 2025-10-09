@@ -1,13 +1,11 @@
-import { createContext, useContext, useState, useEffect, type ReactNode,  } from "react";
-
-export interface Todo {
-  id: number;
-  title: string;
-  comment: string;
-  tag: string;
-  date: string;
-  completed: boolean;
-}
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
+import type { Todo } from "../types";
 
 interface TodoContextType {
   todos: Todo[];
@@ -45,8 +43,6 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
     setTodos([...todos, newTodo]);
   };
 
-  
-
   const toggleTodo = (id: number) => {
     setTodos(
       todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
@@ -58,9 +54,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
   };
 
   const updateTodo = (id: number, updatedFields: Partial<Todo>) => {
-    setTodos(
-      todos.map((t) => (t.id === id ? { ...t, ...updatedFields } : t))
-    );
+    setTodos(todos.map((t) => (t.id === id ? { ...t, ...updatedFields } : t)));
   };
 
   const getTodosByDate = (date: string) => {

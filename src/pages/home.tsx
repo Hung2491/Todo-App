@@ -54,12 +54,12 @@ export default function Home() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
-  const [searchQuery, setSearchQuery] = useState(""); // Tách todos thành 2 nhóm: chưa hoàn thành và đã hoàn thành
+  const [searchQuery, setSearchQuery] = useState("");
   const activeTodos = todos.filter((todo) => !todo.completed);
   const completedTodos = todos.filter((todo) => todo.completed);
 
   const filterBySearch = (list: Todo[]): Todo[] => {
-    if (searchQuery.trim() === "") return list; // nếu chưa nhập search thì trả về nguyên list
+    if (searchQuery.trim() === "") return list;
     return list.filter((todo) =>
       todo.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -69,8 +69,8 @@ export default function Home() {
   const filteredCompletedTodos = filterBySearch(completedTodos);
   const getToday = (): string => {
     const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0"); // thêm 0 nếu < 10
-    const month = String(today.getMonth() + 1).padStart(2, "0"); // tháng bắt đầu từ 0
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
 
     return `${day}/${month}/${year}`;
@@ -150,8 +150,6 @@ export default function Home() {
           </Box>
         )}
 
-        {activeTodos.length > 0 && completedTodos.length > 0}
-
         {filteredCompletedTodos.length > 0 && (
           <Box>
             <Typography variant="h6" sx={styles.sectionTitle}>
@@ -178,15 +176,6 @@ export default function Home() {
               </Typography>
             </Box>
           )}
-
-        {/* Hiển thị khi không có todo nào */}
-        {/* {todos.length === 0 && (
-          <Box sx={styles.emptyState}>
-            <Typography variant="body1" sx={styles.emptyText}>
-              No tasks yet. Click the + button to add your first task!
-            </Typography>
-          </Box>
-        )} */}
 
         <Fab
           onClick={() => navigate("/addTodo")}

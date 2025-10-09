@@ -1,4 +1,10 @@
-import { Box, Typography, useTheme, useMediaQuery, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  useTheme,
+  useMediaQuery,
+  IconButton,
+} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useParams, useNavigate } from "react-router";
 import TodoItem from "../components/todo_Item";
@@ -9,17 +15,21 @@ import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import FolderIcon from "@mui/icons-material/Folder";
 import type { JSX } from "react";
 
-const TAG_INFO: Record<string, { icon: JSX.Element; color: string; iconColor: string }> = {
-  Work: {
+const TAG_INFO: Record<
+  string,
+  { icon: JSX.Element; color: string; iconColor: string }
+> = {
+  Health: {
     icon: <FavoriteIcon sx={{ fontSize: 40 }} />,
     color: "#f2f4fe",
     iconColor: "#7990f8",
   },
-  Health: {
+  Work: {
     icon: <WorkIcon sx={{ fontSize: 40 }} />,
     color: "#edfaf3",
     iconColor: "#46cf8b",
   },
+
   Mental: {
     icon: <VolunteerActivismIcon sx={{ fontSize: 40 }} />,
     color: "#f8eff7",
