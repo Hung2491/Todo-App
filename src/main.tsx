@@ -6,9 +6,14 @@ import Detail from "./pages/detail";
 import { TodoProvider } from "./context/todoContext";
 import TagFilter from "./pages/tag_filter";
 
+
+
+
 const root = document.getElementById("root");
 
 if (root) {
+ 
+
   ReactDOM.createRoot(root).render(
     <TodoProvider>
       <BrowserRouter>
@@ -16,7 +21,7 @@ if (root) {
           <Route path="/" element={<Home />} />
           <Route path="/addTodo" element={<AddTodo />} />
           <Route path="/detail/:date" element={<Detail />} />
-           <Route path="/tag/:tag" element={<TagFilter />} />
+          <Route path="/tag/:tag" element={<TagFilter />} />
         </Routes>
       </BrowserRouter>
     </TodoProvider>

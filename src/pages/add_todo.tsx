@@ -84,13 +84,13 @@ export default function AddTodo() {
             multiline
             fullWidth
             onChange={(e) => setComment(e.target.value)}
-            rows={isMobile ? 3 : 4} // mobile ít dòng hơn
+            rows={isMobile ? 3 : 4}
             sx={styles.textField}
           />
           <Select
             value={tag}
             onChange={(e) => setTag(e.target.value)}
-            size={isMobile ? "small" : "medium"} // nhỏ gọn hơn trên mobile
+            size={isMobile ? "small" : "medium"}
           >
             {TAGS.map((t) => (
               <MenuItem key={t} value={t}>
@@ -105,7 +105,7 @@ export default function AddTodo() {
             <DateTimePicker
               value={date}
               onChange={(newValue) => setDate(newValue)}
-              minDate={dayjs()} // không chọn ngày trước hôm nay
+              minDate={dayjs()}
             />
           </DemoContainer>
         </LocalizationProvider>
@@ -177,7 +177,6 @@ const styles = {
     width: "95%",
     flex: 1,
     bottom: 40,
-    
   },
   icon: {
     color: "gray",

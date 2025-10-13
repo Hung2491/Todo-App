@@ -92,12 +92,12 @@ export default function TodoItem({
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onToggle(todo.id);
+    onToggle(todo._id!);
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onDelete(todo.id);
+    onDelete(todo._id!);
   };
 
   const handleClickOpen = (e: React.MouseEvent) => {
@@ -130,7 +130,7 @@ export default function TodoItem({
         editedDate.month() + 1
       }/${editedDate.year()}`;
 
-      onUpdate(todo.id, {
+      onUpdate(todo._id!, {
         title: editedTitle,
         comment: editedComment,
         tag: editedTag,

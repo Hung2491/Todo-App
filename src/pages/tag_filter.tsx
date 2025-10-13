@@ -54,7 +54,6 @@ export default function TagFilter() {
   // Lọc todos theo tag
   const filteredTodos = todos.filter((todo) => todo.tag === tag);
 
-  // Phân chia thành active và completed
   const activeTodos = filteredTodos.filter((todo) => !todo.completed);
   const completedTodos = filteredTodos.filter((todo) => todo.completed);
 
@@ -129,7 +128,7 @@ export default function TagFilter() {
             </Typography>
             {activeTodos.map((todo) => (
               <TodoItem
-                key={todo.id}
+                key={todo._id}
                 todo={todo}
                 onToggle={toggleTodo}
                 onDelete={deleteTodo}
@@ -147,7 +146,7 @@ export default function TagFilter() {
             </Typography>
             {completedTodos.map((todo) => (
               <TodoItem
-                key={todo.id}
+                key={todo._id}
                 todo={todo}
                 onToggle={toggleTodo}
                 onDelete={deleteTodo}

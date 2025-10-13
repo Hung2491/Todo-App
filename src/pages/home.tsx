@@ -140,7 +140,7 @@ export default function Home() {
             </Typography>
             {filteredActiveTodos.map((todo) => (
               <TodoItem
-                key={todo.id}
+                key={todo._id}
                 todo={todo}
                 onToggle={toggleTodo}
                 onDelete={deleteTodo}
@@ -157,7 +157,7 @@ export default function Home() {
             </Typography>
             {filteredCompletedTodos.map((todo) => (
               <TodoItem
-                key={todo.id}
+                key={todo._id}
                 todo={todo}
                 onToggle={toggleTodo}
                 onDelete={deleteTodo}

@@ -18,13 +18,9 @@ export default function Detail() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const navigate = useNavigate();
-  // Get todos for the selected date
   const filteredTodos = getTodosByDate(date || "");
-
-  // Phân chia todos thành 2 nhóm: chưa hoàn thành và đã hoàn thành
   const activeTodos = filteredTodos.filter((todo) => !todo.completed);
   const completedTodos = filteredTodos.filter((todo) => todo.completed);
-
   const completedCount = completedTodos.length;
   const totalCount = filteredTodos.length;
 
@@ -78,7 +74,7 @@ export default function Detail() {
             </Typography>
             {activeTodos.map((todo) => (
               <TodoItem
-                key={todo.id}
+                key={todo._id}
                 todo={todo}
                 onToggle={toggleTodo}
                 onDelete={deleteTodo}
@@ -96,7 +92,7 @@ export default function Detail() {
             </Typography>
             {completedTodos.map((todo) => (
               <TodoItem
-                key={todo.id}
+                key={todo._id}
                 todo={todo}
                 onToggle={toggleTodo}
                 onDelete={deleteTodo}
