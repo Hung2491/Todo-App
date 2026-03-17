@@ -45,7 +45,7 @@ export default function Detail() {
         {/* Summary */}
         <Box sx={styles.summaryBox}>
           <Typography variant="body1" sx={styles.summaryText}>
-            {completedCount} of {totalCount} tasks completed
+            {completedCount} of {totalCount} Tasks completed
           </Typography>
           <Box sx={styles.progressBar}>
             <Box
