@@ -6,14 +6,9 @@ import Detail from "./pages/detail";
 import { TodoProvider } from "./context/todoContext";
 import TagFilter from "./pages/tag_filter";
 
-
-
-
 const root = document.getElementById("root");
 
 if (root) {
- 
-
   ReactDOM.createRoot(root).render(
     <TodoProvider>
       <BrowserRouter>
