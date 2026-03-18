@@ -116,7 +116,7 @@ export default function Home() {
           ))}
         </Grid>
         <TextField
-          placeholder="Search by title..."
+          placeholder="Search by title......."
           variant="outlined"
           fullWidth
           value={searchQuery}
