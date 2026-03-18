@@ -1,30 +1,23 @@
-# ─── Stage 1: Build ───────────────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+# ===== STAGE 1: BUILD =====
+FROM node:20 AS builder
 
 WORKDIR /app
 
-# Copy package files trước để tận dụng layer cache
 COPY package.json package-lock.json ./
+RUN npm install
 
-RUN npm ci
-
-# Copy toàn bộ source rồi build
 COPY . .
-
 RUN npm run build
 
-# ─── Stage 2: Serve với Nginx ─────────────────────────────────────────────────
-FROM nginx:1.27-alpine AS runner
+# ===== STAGE 2: RUNTIME =====
+FROM node:21-alpine
 
-# Xóa config mặc định của Nginx
-RUN rm -rf /usr/share/nginx/html/*
+WORKDIR /app
 
-# Copy file build từ stage 1
-COPY --from=builder /app/dist /usr/share/nginx/html
+# chỉ copy file cần thiết
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json .
 
-# Copy nginx config tuỳ chỉnh (nếu có)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN npm install --only=production
 
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "dist/index.js"]
