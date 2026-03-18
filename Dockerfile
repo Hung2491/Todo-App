@@ -1,23 +1,14 @@
-# ===== STAGE 1: BUILD =====
-FROM node:20 AS builder
-
+# Stage 1: Build (Dùng Node để build ra file tĩnh)
+FROM node:20-alpine AS build-stage
 WORKDIR /app
-
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm install
-
 COPY . .
 RUN npm run build
 
-# ===== STAGE 2: RUNTIME =====
-FROM node:21-alpine
-
-WORKDIR /app
-
-# chỉ copy file cần thiết
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json .
-
-RUN npm install --only=production
-
-CMD ["node", "dist/assets/index-BDHyn50v.js"]
+# Stage 2: Production (Dùng Nginx để phục vụ file tĩnh)
+FROM nginx:stable-alpine
+# Copy code đã build từ Stage 1 sang thư mục của Nginx
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
