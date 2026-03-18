@@ -20,4 +20,4 @@ COPY --from=builder /app/package.json .
 
 RUN npm install --only=production
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/assets/index-BDHyn50v.js"]
