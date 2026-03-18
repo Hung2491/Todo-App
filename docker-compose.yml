@@ -5,17 +5,46 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: todo-app-frontend
-    restart: unless-stopped
+    # Thay unless-stopped bằng always để đảm bảo VPS reboot là app lên ngay
+    restart: always 
     ports:
-      - "3002:3002"       # HTTP
-      # - "443:443"   # HTTPS — bỏ comment khi đã có SSL cert
+      - "3002:3002"
+    
+    # Gắn cấu hình để không bao giờ mất file (Mục 2.2 - Backup & Ổn định)
+    volumes:
+      - ./todo.conf:/etc/nginx/conf.d/todo.conf:ro
+    
+    # Giới hạn tài nguyên (Cực kỳ quan trọng để Prometheus cảnh báo)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'      # Tối đa 50% CPU
+          memory: 256M      # Tối đa 256MB RAM
+        reservations:
+          memory: 64M       # Luôn dành sẵn 64MB cho app
+
+    # Kiểm tra sức khỏe định kỳ
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
     networks:
       - todo-network
 
-    # Ví dụ mount nginx config tuỳ chỉnh hoặc SSL certs:
-    # volumes:
-    #   - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    #   - /etc/letsencrypt:/etc/letsencrypt:ro
+  # ── Prometheus (Giám sát tài nguyên - Mục 2.2) ─────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - todo-network
+    restart: always
 
 networks:
   todo-network:
