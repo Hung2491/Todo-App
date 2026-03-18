@@ -10,5 +10,5 @@ RUN npm run build
 FROM nginx:stable-alpine
 # Copy code đã build từ Stage 1 sang thư mục của Nginx
 COPY --from=build-stage /app/dist /usr/share/nginx/html
-EXPOSE 80
+EXPOSE 3002
 CMD ["nginx", "-g", "daemon off;"]
