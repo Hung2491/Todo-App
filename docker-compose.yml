@@ -24,15 +24,23 @@ services:
           memory: 64M       # Luôn dành sẵn 64MB cho app
 
     # Kiểm tra sức khỏe định kỳ
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3002/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:3002/"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+    start_period: 10s
     networks:
       - todo-network
+      
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    networks:
+      - todo-network
+    restart: always
 
   # ── Prometheus (Giám sát tài nguyên - Mục 2.2) ─────────────────────────────
   prometheus:
@@ -40,6 +48,7 @@ services:
     container_name: prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alert_rules.yml:/etc/prometheus/alert_rules.yml
     ports:
       - "9090:9090"
     networks:

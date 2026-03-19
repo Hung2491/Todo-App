@@ -61,7 +61,7 @@ export default function Detail() {
         {filteredTodos.length === 0 && (
           <Box sx={styles.emptyState}>
             <Typography variant="body1" sx={styles.emptyText}>
-              No tasks for this date
+              No task for this date
             </Typography>
           </Box>
         )}
