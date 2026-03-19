@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # ── Frontend (React/Vite build → Nginx) ────────────────────────────────────
   frontend:
@@ -5,31 +7,25 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: todo-app-frontend
-    # Thay unless-stopped bằng always để đảm bảo VPS reboot là app lên ngay
     restart: always 
     ports:
       - "3002:3002"
-    
-    # Gắn cấu hình để không bao giờ mất file (Mục 2.2 - Backup & Ổn định)
     volumes:
       - ./todo.conf:/etc/nginx/conf.d/todo.conf:ro
-    
-    # Giới hạn tài nguyên (Cực kỳ quan trọng để Prometheus cảnh báo)
     deploy:
       resources:
         limits:
-          cpus: '0.50'      # Tối đa 50% CPU
-          memory: 256M      # Tối đa 256MB RAM
+          cpus: '0.50'
+          memory: 256M
         reservations:
-          memory: 64M       # Luôn dành sẵn 64MB cho app
-
-    # Kiểm tra sức khỏe định kỳ
-  healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:3002/"]
-    interval: 30s
-    timeout: 10s
-    retries: 3
-    start_period: 10s
+          memory: 64M
+    # SỬA LỖI TẠI ĐÂY: Healthcheck phải thụt vào 4 khoảng trắng (con của frontend)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - todo-network
       
@@ -49,13 +45,14 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - ./alert_rules.yml:/etc/prometheus/alert_rules.yml
+      - prometheus_data:/prometheus
     ports:
       - "9090:9090"
     networks:
       - todo-network
     restart: always
     
-    # ── Node-Exporter (Soi CPU/RAM của con VM 103.252.73.200) ────────────────
+  # ── Node-Exporter (Soi CPU/RAM của con VM 103.252.73.200) ────────────────
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
@@ -63,8 +60,9 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
+    # Node-Exporter mặc định chạy cổng 9100, ông nên để 9100 để prometheus dễ tìm
     ports:
-      - "8080:8080"
+      - "9100:9100"
     command:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
