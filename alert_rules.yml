@@ -9,7 +9,7 @@ groups:
       description: "App Todo đang dùng hơn 80% RAM định mức (256MB) trong 1 phút."
 
   - alert: InstanceDown
-    expr: up == 0
+    expr: up == 1
     for: 1m
     annotations:
       summary: "Server sập!"
