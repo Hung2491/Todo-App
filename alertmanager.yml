@@ -11,8 +11,11 @@ receivers:
   - bot_token: '8738278661:AAFVxh8kdOXvbN_4f-2cdCA3v8qjgYhS9EE'
     chat_id: 8588793892
     send_resolved: true
+    parse_mode: 'HTML'
     message: |
       <b>🔥 Cảnh báo: {{ .Status | toUpper }}</b>
-      <b>Ứng dụng:</b> {{ .GroupLabels.alertname }}
-      <b>Chi tiết:</b> {{ range .Alerts }}{{ .Annotations.description }}{{ end }}
+      <b>Tên lỗi:</b> {{ .GroupLabels.alertname }}
+      {{ range .Alerts }}
+      <b>Chi tiết:</b> {{ .Annotations.description }}
       <b>Thời gian:</b> {{ .StartsAt.Format "15:04:05" }}
+      {{ end }}
