@@ -10,11 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. Build Docker Image (Stage này thay thế cho npm install/build trên Actions)
+      # 1. Build Docker Image
       - name: Build Docker Image
         run: docker build -t todo-app-frontend:latest .
 
-      # 2. Lưu Image thành file để chuyển lên Server (Nếu chưa dùng Docker Registry)
+      # 2. Lưu Image thành file
       - name: Save Docker Image
         run: docker save todo-app-frontend:latest > todo-app.tar
 
@@ -34,7 +34,7 @@ jobs:
         with:
           name: docker-image
 
-      # 3. Copy file Image và file Config (todo.conf, docker-compose.yml) lên VPS
+      # 3. CHỈ copy file Image lên Server (Không cần copy config nữa vì đã có Git lo)
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -42,11 +42,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
-          # Copy cả file Image và file cấu hình để vận hành
-          source: "todo-app.tar,todo.conf,docker-compose.yml"
+          source: "todo-app.tar"
           target: "~/project/Todo-App"
 
-      # 4. SSH vào Server để thực thi Docker
+      # 4. Kéo Code từ Git -> Load Image -> Deploy
       - name: Docker Deploy
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -56,9 +55,18 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             cd ~/project/Todo-App
+            
+            # --- BƯỚC MỚI: KÉO CODE TỪ GIT ---
+            # Reset cứng để đồng bộ 100% với nhánh main trên Github, xóa bỏ mọi thay đổi rác trên VM
+            git fetch --all
+            git reset --hard origin/main
+            git pull origin main
+            
             # Load image từ file tar
             docker load < todo-app.tar
-            # Khởi chạy bằng Compose để đảm bảo restart:always và đúng cổng 3002
+            
+            # Khởi chạy bằng Compose (Lúc này nó sẽ dùng các file config mới nhất vừa kéo về)
             docker compose up -d
-            # Dọn dẹp các image cũ để tiết kiệm ổ cứng (Mục 2.2 - Cảnh báo tài nguyên)
+            
+            # Dọn dẹp các image cũ để tiết kiệm ổ cứng
             docker image prune -f
