@@ -35,7 +35,7 @@ services:
     volumes:
       - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
     ports:
-      - "9090:9090"
+      - "9093:9093"
     networks:
       - todo-network
     restart: always
