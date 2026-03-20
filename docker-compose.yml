@@ -43,7 +43,7 @@ services:
     build: .
     container_name: todo-backend
     ports:
-      - "3000:3000"
+      - "8000:3002"
     # Nạp file .env vào trong container:
     env_file:
       - .env
