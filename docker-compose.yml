@@ -9,7 +9,7 @@ services:
     container_name: todo-app-frontend
     restart: always 
     ports:
-      - "3002:3002"
+      - "3002:80"
     volumes:
       - ./todo.conf:/etc/nginx/conf.d/todo.conf:ro
     deploy:
@@ -43,13 +43,10 @@ services:
     build: .
     container_name: todo-backend
     ports:
-      - "8000:3002"
+      - "8000:3000"
     # Nạp file .env vào trong container:
     env_file:
       - .env
-    # Ghi đè MONGO_URI vì khi chạy trong docker, backend phải kết nối sang container 'mongodb' chứ không phải 'localhost'
-    environment:
-      - MONGO_URI=mongodb://admin:240901@mongodb:27017/ts-crud?authSource=admin
     depends_on:
       - mongodb
     restart: always
@@ -57,12 +54,6 @@ services:
   mongodb:
     image: mongo:latest
     container_name: todo-mongodb
-    ports:
-      - "27017:27017" # Có thể bỏ dòng này nếu không muốn host bên ngoài (VM) truy cập thẳng vào DB
-    environment:
-      # Thiết lập tài khoản root admin cho Mongo khớp với trong file .env của bạn
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=240901
     volumes:
       - mongo_data:/data/db
     restart: always
