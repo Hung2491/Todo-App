@@ -54,7 +54,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            cd ~/project/Todo-App
+            cd ~/project/FB-Todo-App/Todo-App
             
             # --- BƯỚC MỚI: KÉO CODE TỪ GIT ---
             # Reset cứng để đồng bộ 100% với nhánh main trên Github, xóa bỏ mọi thay đổi rác trên VM
