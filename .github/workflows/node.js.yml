@@ -9,7 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      # Bước quan trọng: Tạo file .env từ GitHub Secrets
+      - name: Create .env file
+        run: |
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> .env
+          echo "CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}" >> .env
+          echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }}" >> .env
+          echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}" >> .env
       # 1. Build Docker Image
       - name: Build Docker Image
         run: docker build -t todo-app-frontend:latest .
@@ -34,7 +41,7 @@ jobs:
         with:
           name: docker-image
 
-      # 3. CHỈ copy file Image lên Server (Không cần copy config nữa vì đã có Git lo)
+      # 3. CHỈ copy file Image lên Server 
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.7
         with:
