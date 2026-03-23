@@ -22,7 +22,7 @@ services:
   # ── Backend (Node.js) ───────────────────────────────────────────────────
   backend:
     build: .
-    container_name: todo-backend
+    container_name: be-todo
     ports:
       - "8000:3000"
     env_file:
